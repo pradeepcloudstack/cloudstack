@@ -158,6 +158,8 @@ known_categories = {
     'Ucs' : 'UCS',
     'CacheStores' : 'Cache Stores',
     'CacheStore' : 'Cache Store'
+    'Simulator': 'Simulator',
+    'PortableIp': 'Portable IP'
     }
 
 
