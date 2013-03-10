@@ -31,8 +31,6 @@
                       http://www.springframework.org/schema/context
                       http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-  <context:annotation-config />
-
 
 <!--
 
@@ -46,7 +44,63 @@
 -->
   
   <bean id="databaseUpgradeChecker" class="com.cloud.upgrade.DatabaseUpgradeChecker" />
-  <bean id="configurationDaoImpl" class="org.apache.cloudstack.framework.config.dao.ConfigurationDaoImpl" />
+  <bean id="encryptionSecretKeyChecker" class="com.cloud.utils.crypt.EncryptionSecretKeyChecker" />
+
+  <bean id="managementServerImpl" class ="com.cloud.server.ManagementServerImpl" />
+  <bean id="configurationServerImpl" class="com.cloud.server.ConfigurationServerImpl" />
+
+  <bean id="clusterManagerImpl" class="com.cloud.cluster.ClusterManagerImpl" />
+  <bean id="clusteredAgentManagerImpl" class="com.cloud.agent.manager.ClusteredAgentManagerImpl" />
+  <bean id="clusteredVirtualMachineManagerImpl" class="com.cloud.vm.ClusteredVirtualMachineManagerImpl" />
+  <bean id="highAvailabilityManagerExtImpl" class="com.cloud.ha.HighAvailabilityManagerExtImpl" />
+  <bean id="userVmManagerImpl" class="com.cloud.vm.UserVmManagerImpl" />
+  <bean id="consoleProxyManagerImpl" class="com.cloud.consoleproxy.ConsoleProxyManagerImpl" />
+  <bean id="securityGroupManagerImpl2" class="com.cloud.network.security.SecurityGroupManagerImpl2" />
+  <bean id="premiumSecondaryStorageManagerImpl" class="com.cloud.secstorage.PremiumSecondaryStorageManagerImpl" />
+  <bean id="userVmDaoImpl" class="com.cloud.vm.dao.UserVmDaoImpl" />
+  <bean id="ipv6AddressManagerImpl" class="com.cloud.network.Ipv6AddressManagerImpl" />
+
+  <bean id="apiRateLimitServiceImpl" class="org.apache.cloudstack.ratelimit.ApiRateLimitServiceImpl"/>
+  <bean id="BaremetalManager" class="com.cloud.baremetal.manager.BaremetalManagerImpl"/>
+  <bean id="BaremetalDhcpManager" class="com.cloud.baremetal.networkservice.BaremetalDhcpManagerImpl"/>
+  <bean id="BaremetalKickStartPxeService" class="com.cloud.baremetal.networkservice.BaremetalKickStartServiceImpl"/>
+  <bean id="BaremetalPingPxeService" class="com.cloud.baremetal.networkservice.BareMetalPingServiceImpl" />
+  <bean id="BaremetalPxeManager" class="com.cloud.baremetal.networkservice.BaremetalPxeManagerImpl" />
+  <bean id="UcsManager" class="com.cloud.ucs.manager.UcsManagerImpl" />
+  <bean id="UcsBladeDao" class="com.cloud.ucs.database.UcsBladeDaoImpl" />
+  <bean id="UcsManagerDao" class="com.cloud.ucs.database.UcsManagerDaoImpl" />
+
+
+  <!--
+      Network Elements
+  -->
+  <bean id="Ovs" class="com.cloud.network.element.OvsElement">
+    <property name="name" value="Ovs"/>
+  </bean>
+  <bean id="BareMetalDhcp" class="com.cloud.baremetal.networkservice.BaremetalDhcpElement">
+      <property name="name" value="BareMetalDhcp"/>
+  </bean>
+  <bean id="BareMetalPxe" class="com.cloud.baremetal.networkservice.BaremetalPxeElement">
+      <property name="name" value="BareMetalPxe"/>
+  </bean>
+  <bean id="BareMetalUserdata" class="com.cloud.baremetal.networkservice.BaremetalUserdataElement">
+      <property name="name" value="BareMetalUserdata"/>
+  </bean>
+  <bean id="SecurityGroupProvider" class="com.cloud.network.element.SecurityGroupElement">
+    <property name="name" value="SecurityGroupProvider"/>
+  </bean>
+  <bean id="VirtualRouter" class="com.cloud.network.element.VirtualRouterElement">
+    <property name="name" value="VirtualRouter"/>
+  </bean>
+  <bean id="VpcVirtualRouter" class="com.cloud.network.element.VpcVirtualRouterElement">
+    <property name="name" value="VpcVirtualRouter"/>
+  </bean>
+  <!--
+  <bean id="NiciraNvp" class="com.cloud.network.element.NiciraNvpElement">
+    <property name="name" value="NiciraNvp"/>
+  </bean>
+  -->
+
   <bean id="GlobalLoadBalancingRulesServiceImpl" class ="org.apache.cloudstack.region.gslb.GlobalLoadBalancingRulesServiceImpl" />
 
   <!--
@@ -105,28 +159,6 @@
   It determines whether or not a adapter is activated or how it is loaded in order in its managing provider,
 
 -->
-  <bean id="cloudStackImageStoreProviderImpl"
-        class="org.apache.cloudstack.storage.datastore.provider.CloudStackImageStoreProviderImpl"/>
-  <bean id="s3ImageStoreProviderImpl"
-        class="org.apache.cloudstack.storage.datastore.provider.S3ImageStoreProviderImpl"/>
-  <bean id="swiftImageStoreProviderImpl"
-        class="org.apache.cloudstack.storage.datastore.provider.SwiftImageStoreProviderImpl"/>
-  <bean id="solidFireDataStoreProvider"
-        class="org.apache.cloudstack.storage.datastore.provider.SolidfirePrimaryDataStoreProvider"/>
-
-  <!--Storage Providers-->
-  <bean id="dataStoreProviderManager"
-        class="org.apache.cloudstack.storage.datastore.provider.DataStoreProviderManagerImpl">
-    <property name="providers">
-      <list merge="true">
-        <ref bean="cloudStackPrimaryDataStoreProviderImpl"/>
-        <ref local="cloudStackImageStoreProviderImpl"/>
-        <ref local="s3ImageStoreProviderImpl"/>
-        <ref local="swiftImageStoreProviderImpl"/>
-        <ref local="solidFireDataStoreProvider"/>
-      </list>
-    </property>
-  </bean>
 
   <!-- Security adapters -->
   <bean id="userAuthenticators" class="com.cloud.utils.component.AdapterList">
@@ -167,7 +199,6 @@
           <ref bean="SecondaryStorageDiscoverer"/>
           <ref bean="KvmServerDiscoverer"/>
           <ref bean="LxcServerDiscoverer"/>
-          <ref bean="BareMetalDiscoverer"/>
           <ref bean="OvmDiscoverer"/>
       </list>
     </property>
@@ -181,7 +212,6 @@
           <ref bean="XenServerInvestigator"/>
           <ref bean="UserVmDomRInvestigator"/>
           <ref bean="ManagementIPSystemVMInvestigator"/>
-          <ref bean="KVMInvestigator"/>
       </list>
     </property>
   </bean>
@@ -204,7 +234,9 @@
           <ref bean="UserDispersingPlanner" />
           <ref bean="UserConcentratedPodPlanner" />
           <ref bean="ImplicitDedicationPlanner" />
+<!--
           <ref bean="BareMetalPlanner" />
+-->
       </list>
     </property>
   </bean>
@@ -253,7 +285,9 @@
       <list>
           <ref bean="VirtualRouter"/>
           <ref bean="VpcVirtualRouter"/>
+<!--
           <ref bean="BareMetalDhcp"/>
+-->
       </list>
     </property>
   </bean>
@@ -287,11 +321,12 @@
           <ref bean="VpcVirtualRouter"/>
           <ref bean="NiciraNvp" />
           <ref bean="MidoNetElement"/>
-          <ref bean="StratosphereSsp"/>
           <ref bean="InternalLbVm"/>
+<!--
           <ref bean="BareMetalDhcp"/>
           <ref bean="BareMetalPxe"/>
           <ref bean="BareMetalUserdata"/>
+-->
       </list>
     </property>
   </bean>
@@ -308,17 +343,8 @@
     <property name="Adapters">
       <list>
           <ref bean="HostAntiAffinityProcessor" />
-          <ref bean="ExplicitDedicationProcessor"/>
       </list>
     </property>
   </bean>
 
-  <!--
-    Dedicated Resources components
-  -->
-  <bean id="DedicatedResourceManagerImpl" class="org.apache.cloudstack.dedicated.DedicatedResourceManagerImpl"/>
-  <bean id="ExplicitDedicationProcessor" class="org.apache.cloudstack.affinity.ExplicitDedicationProcessor">
-    <property name="name" value="ExplicitDedicationProcessor"/>
-    <property name="type" value="ExplicitDedication"/>
-  </bean>
 </beans>
