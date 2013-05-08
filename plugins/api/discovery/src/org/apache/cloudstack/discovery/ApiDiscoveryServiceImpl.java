@@ -96,7 +96,8 @@ public class ApiDiscoveryServiceImpl implements ApiDiscoveryService {
                 responseApiNameListMap.get(responseName).add(apiName);
             }
             response.setRelated(responseName);
-
+            String entity = apiCmdAnnotation.responseObject().getSimpleName();
+            response.setEntity(entity.replaceAll("Response", ""));
 
             Field[] responseFields = apiCmdAnnotation.responseObject().getDeclaredFields();
             for(Field responseField: responseFields) {
