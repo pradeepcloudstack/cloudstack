@@ -23,7 +23,13 @@ import com.cloud.utils.StringUtils;
 import com.cloud.utils.component.PluggableService;
 import com.google.gson.annotations.SerializedName;
 import org.apache.cloudstack.acl.APIChecker;
-import org.apache.cloudstack.api.*;
+import org.apache.cloudstack.api.APICommand;
+import org.apache.cloudstack.api.ApiConstants;
+import org.apache.cloudstack.api.BaseAsyncCmd;
+import org.apache.cloudstack.api.BaseAsyncCreateCmd;
+import org.apache.cloudstack.api.BaseCmd;
+import org.apache.cloudstack.api.BaseResponse;
+import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.command.user.discovery.ListApisCmd;
 import org.apache.cloudstack.api.response.ApiDiscoveryResponse;
 import org.apache.cloudstack.api.response.ApiParameterResponse;
@@ -36,7 +42,12 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Local;
 import javax.inject.Inject;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 @Local(value = ApiDiscoveryService.class)
@@ -88,6 +99,7 @@ public class ApiDiscoveryServiceImpl implements ApiDiscoveryService {
             }
             ApiDiscoveryResponse response = getCmdRequestMap(cmdClass, apiCmdAnnotation);
             String responseName = apiCmdAnnotation.responseObject().getName();
+            response.setResponseName(responseName);
             if (!responseName.contains("SuccessResponse")) {
                 if (!responseApiNameListMap.containsKey(responseName)) {
                     responseApiNameListMap.put(responseName, new ArrayList<String>());
@@ -95,9 +107,6 @@ public class ApiDiscoveryServiceImpl implements ApiDiscoveryService {
                 //Identify entities for those with a direct response
                 responseApiNameListMap.get(responseName).add(apiName);
                 String entity = apiCmdAnnotation.responseObject().getSimpleName().replace("Response", "");
-                response.setEntity(entity);
-            } else {
-                String entity = deriveRelatedEntity(apiName, response).replace("Response", "");
                 response.setEntity(entity);
             }
 
@@ -115,6 +124,14 @@ public class ApiDiscoveryServiceImpl implements ApiDiscoveryService {
             ApiDiscoveryResponse response = s_apiNameDiscoveryResponseMap.get(apiName);
             Set<ApiParameterResponse> processedParams = new HashSet<ApiParameterResponse>();
             for (ApiParameterResponse param: response.getParams()) {
+                //Derive entity for unmapped apis
+                if (response.getEntity() == null) {
+                    String entity = deriveRelatedEntity(apiName, param);
+                    if (entity != null && !entity.isEmpty()) {
+                        response.setEntity(entity);
+                    }
+                }
+
                 if (responseApiNameListMap.containsKey(param.getRelated())) {
                     List<String> relatedApis = responseApiNameListMap.get(param.getRelated());
                     param.setRelated(StringUtils.join(relatedApis, ","));
@@ -132,24 +149,29 @@ public class ApiDiscoveryServiceImpl implements ApiDiscoveryService {
             } else {
                 response.setRelated(null);
             }
-
             s_apiNameDiscoveryResponseMap.put(apiName, response);
         }
         return responseApiNameListMap;
     }
 
-    private String deriveRelatedEntity(String currentApi, ApiDiscoveryResponse response) {
+    private String deriveRelatedEntity(String api, ApiParameterResponse param) {
         //Guess the entity from the related APIs
+        //For APIs that are deleteXxx, the right entityType is in the `id` field of the Cmd
         String entity = "";
-        for (ApiParameterResponse param : response.getParams()) {
-            if (param.getRelated() != null) {
+        if (param.getName() != null && param.getName().equals(ApiConstants.ID)) {
+            if (api.startsWith("delete")) {
+                entity = param.getRelated();
+            }
+        } else {
+            if (param.getRelated() != null && !param.getRelated().equals("Object")) {
                 entity = param.getRelated();
             }
         }
         if (entity.isEmpty()) {
-            s_logger.warn("Couldn't find entity for API: " + currentApi + " from related APIs");
+            s_logger.warn("Couldn't find entity for API: " + api + " from related APIs");
+            return null;
         }
-        return entity;
+        return entity.replace("Response", "");
     }
 
     private ApiResponseResponse getFieldResponseMap(Field responseField) {
