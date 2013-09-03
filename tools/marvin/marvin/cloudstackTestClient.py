@@ -29,7 +29,7 @@ class cloudstackTestClient(object):
                  apiKey=None, securityKey=None, asyncTimeout=3600,
                  defaultWorkerThreads=10, logging=None):
         self.connection = \
-            cloudstackConnection.cloudConnection(mgtSvr, port, user, passwd,
+            cloudstackConnection.CloudConnection(mgtSvr, port, user, passwd,
                                                  apiKey, securityKey,
                                                  asyncTimeout, logging)
         self.apiClient =\
