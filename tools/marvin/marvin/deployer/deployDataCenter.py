@@ -16,7 +16,6 @@
 # under the License.
 
 """Deploy datacenters according to a json configuration file"""
-import configGenerator
 import cloudstackException
 import cloudstackTestClient
 import logging
@@ -24,6 +23,7 @@ from cloudstackAPI import *
 from os import path
 from time import sleep
 from optparse import OptionParser
+from marvin.deployer import configGenerator
 
 
 class deployDataCenters(object):
@@ -31,8 +31,8 @@ class deployDataCenters(object):
     def __init__(self, cfgFile):
         if not path.exists(cfgFile) \
            and not path.exists(path.abspath(cfgFile)):
-            raise IOError("config file %s not found. please \
-specify a valid config file" % cfgFile)
+            raise IOError("deployer file %s not found. please \
+specify a valid deployer file" % cfgFile)
         self.configFile = cfgFile
 
     def addHosts(self, hosts, zoneId, podId, clusterId, hypervisor):
@@ -513,7 +513,7 @@ specify a valid config file" % cfgFile)
             self.config = configGenerator.get_setup_config(self.configFile)
         except:
             raise cloudstackException.InvalidParameterException(
-                "Failed to load config %s" % self.configFile)
+                "Failed to load deployer %s" % self.configFile)
 
         mgt = self.config.mgtSvr[0]
 
@@ -554,7 +554,7 @@ specify a valid config file" % cfgFile)
                 apiKey, securityKey,
                 logging=self.testClientLogger)
 
-        """config database"""
+        """deployer database"""
         dbSvr = self.config.dbSvr
         if dbSvr is not None:
             self.testClient.dbConfigure(dbSvr.dbSvr, dbSvr.port, dbSvr.user,
@@ -603,7 +603,7 @@ if __name__ == "__main__":
 
     parser.add_option("-i", "--input", action="store",
                       default="./datacenterCfg", dest="input", help="the path \
-                      where the json config file generated, by default is \
+                      where the json deployer file generated, by default is \
                       ./datacenterCfg")
 
     (options, args) = parser.parse_args()

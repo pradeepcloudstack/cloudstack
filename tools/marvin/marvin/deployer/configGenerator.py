@@ -829,8 +829,8 @@ def generate_setup_config(config, file=None):
 
 def get_setup_config(file):
     if not os.path.exists(file):
-        raise IOError("config file %s not found. \
-please specify a valid config file" % file)
+        raise IOError("deployer file %s not found. \
+please specify a valid deployer file" % file)
     config = cloudstackConfiguration()
     configLines = []
     with open(file, 'r') as fp:
@@ -853,7 +853,7 @@ if __name__ == "__main__":
 with security groups")
     parser.add_option("-o", "--output", action="store",
                       default="./datacenterCfg", dest="output",
-                      help="the path where the json config file generated, \
+                      help="the path where the json deployer file generated, \
 by default is ./datacenterCfg")
 
     (options, args) = parser.parse_args()
