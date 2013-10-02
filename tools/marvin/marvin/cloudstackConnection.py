@@ -182,6 +182,8 @@ class CloudConnection(object):
                     isAsync = getattr(cmd, attribute)
                 elif attribute == "required":
                     required = getattr(cmd, attribute)
+                elif attribute == "entity":
+                    continue
                 else:
                     requests[attribute] = getattr(cmd, attribute)
 
