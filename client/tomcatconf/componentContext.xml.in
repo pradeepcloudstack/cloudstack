@@ -91,6 +91,14 @@
   <bean id="ucsBladeDaoImpl" class="com.cloud.ucs.database.UcsBladeDaoImpl" />
   <bean id="ucsManagerDaoImpl" class="com.cloud.ucs.database.UcsManagerDaoImpl" />
 
+  <!-- 
+   Juniper NDAPI support components
+  -->
+  <bean id="juniperNDAPINaasServiceNetworkMapDaoImpl" class="com.cloud.network.naas.dao.JuniperNDAPINaasServiceNetworkMapDaoImpl" />
+  <bean id="JuniperNetworkGuru" class="com.cloud.network.guru.JuniperNetworkGuru">
+        <property name="name" value="JuniperNetworkGuru"/>
+  </bean>
+
 <!--
 
   Deployment configurations of various adapters
@@ -269,6 +277,7 @@
           <ref bean="PodBasedNetworkGuru"/>
           <ref bean="DirectPodBasedNetworkGuru"/>
           <ref bean="ControlNetworkGuru"/>
+          <ref bean="JuniperNetworkGuru"/>
           <ref bean="DirectNetworkGuru"/>
           <ref bean="OvsGuestNetworkGuru"/>
           <ref bean="PrivateNetworkGuru"/>

@@ -96,6 +96,7 @@ install:
 	cp -r client/target/cloud-client-ui-$(VERSION)$(MVNADD)/* $(DESTDIR)/usr/share/$(PACKAGE)-management/webapps/client/
 	cp server/target/conf/* $(DESTDIR)/$(SYSCONFDIR)/$(PACKAGE)/server/
 	cp client/target/conf/* $(DESTDIR)/$(SYSCONFDIR)/$(PACKAGE)/management/
+        cp plugins/network-elements/juniper-networkguru/src/JuniperNetworkGuru.properties $(DESTDIR)/$(SYSCONFDIR)/$(PACKAGE)/management/
 
 	# nast hack for a couple of configuration files
 	mv $(DESTDIR)/$(SYSCONFDIR)/$(PACKAGE)/server/cloudstack-limits.conf $(DESTDIR)/$(SYSCONFDIR)/security/limits.d/

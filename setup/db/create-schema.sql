@@ -196,6 +196,7 @@ DROP TABLE IF EXISTS `cloud`.`vm_network_map`;
 DROP TABLE IF EXISTS `cloud`.`netapp_volume`;
 DROP TABLE IF EXISTS `cloud`.`netapp_pool`;
 DROP TABLE IF EXISTS `cloud`.`netapp_lun`;
+DROP TABLE IF EXISTS `cloud`.`juniperNDAPI_naasService_Network_map`;
 
 CREATE TABLE `cloud`.`version` (
   `id` bigint unsigned NOT NULL UNIQUE AUTO_INCREMENT COMMENT 'id',
@@ -2472,6 +2473,17 @@ CREATE TABLE `cloud`.`nicira_nvp_nic_map` (
   `nic` varchar(255) UNIQUE COMMENT 'cloudstack uuid of the nic connected to this logical switch port',
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_nicira_nvp_nic_map__nic` FOREIGN KEY(`nic`) REFERENCES `nics`(`uuid`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `cloud`.`juniperNDAPI_naasService_Network_map` (
+ `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+ `naas_id` varchar(255) NOT NULL COMMENT 'naas service of guest network',
+ `guestNetwork_id` bigint unsigned NOT NULL COMMENT 'guest network id',
+ `tenantId` varchar(255) NOT NULL COMMENT 'tenant id for naas service',
+ `naasDomainId` varchar(255) NOT NULL COMMENT 'naas domain id',
+ `vlanId` varchar(255) NOT NULL COMMENT 'vlan id',
+ `l2csId` varchar(255),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 SET foreign_key_checks = 1;
