@@ -1,7 +1,7 @@
 CloudStack Network Guru Plugin from Juniper Networks supports guest-traffic isolation using VLANs, and uses NDAPI or NETCONF/DMI to configure
 physical networks.
 
-Download Netconf.jar to libs directory (otherwise compilation will file):
+The plugin requires Netconf.jar. So the same has to be downloaded(to libs directory) and installed.
 
 To download Netconf.jar:
 
@@ -11,3 +11,6 @@ To download Netconf.jar:
 (4)Click the link for the appropriate software release.
 (5)Select the Software tab.
 (6)Click the NETCONF API Java Toolkit link, and download the file 
+
+To install:
+Execute the install.sh script under libs directory
